@@ -11,6 +11,7 @@ import PlaylistsPopup from "./components/popups/playlists-popup";
 import AmbientPopup from "./components/popups/ambient-popup";
 import BackgroundSelector from "./components/background-selector";
 import Dock from "./components/dock";
+import YouTubeAudioPlayer from "./components/youtube-player";
 
 function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -73,9 +74,10 @@ function App() {
       <div className="absolute inset-0 bg-black/20 z-0"></div>
 
       {/* YouTube Player (hidden visually but audio plays) */}
-      <div className="absolute top-0 left-0 w-0 h-0 overflow-hidden">
-        <YoutubePlayer playlistId={currentPlaylist} />
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-4">
+        <YouTubeAudioPlayer />
       </div>
+      
 
       {/* Top-right widget */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
