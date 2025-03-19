@@ -13,7 +13,7 @@
     "transpile:electron": "tsc --project src/electron/tsconfig.json"
   },
   "dependencies": {
-"@hookform/resolvers": "^3.9.1",
+    "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -57,12 +57,15 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
+    "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
-    "zod": "^3.24.1"  },
+    "zod": "^3.24.1"
+  },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/better-sqlite3": "^7.6.12",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

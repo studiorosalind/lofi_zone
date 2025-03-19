@@ -24,3 +24,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+test-sqlite.cjs
+test_lofi_zone.db

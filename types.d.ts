@@ -51,5 +51,9 @@ declare namespace YT {
 interface Window {
   YT: typeof YT
   onYouTubeIframeAPIReady: () => void
+  electronAPI: {
+    getUserSession: () => Promise<{ id: number; username: string; email: string; last_login: string } | null>;
+    setUserSession: (username: string) => Promise<{ id: number; username: string; email: string; last_login: string } | null>;
+  }
 }
 
