@@ -12,16 +12,13 @@ import AmbientPopup from "./components/popups/ambient-popup";
 import BackgroundSelector from "./components/background-selector";
 import Dock from "./components/dock";
 import YouTubeAudioPlayer from "./components/youtube-player";
+import { Link } from "react-router-dom";
 
 function App() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentBackground, setCurrentBackground] = useState("cyberpunk-city")
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [activePopup, setActivePopup] = useState<string | null>(null)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showBackgroundSelector, setShowBackgroundSelector] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentPlaylist, setCurrentPlaylist] = useState("PLhK5MCJLYPpcXgj7BI009xIrcLg8rZ2Jl")
 
   useEffect(() => {
@@ -47,7 +44,6 @@ function App() {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDockItemClick = (item: string) => {
     setActivePopup(activePopup === item ? null : item)
   }
@@ -149,6 +145,13 @@ function App() {
       {/* Bottom macOS style dock */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
         <Dock onItemClick={handleDockItemClick} activeItem={activePopup} />
+
+
+        {/* ✅ Navigation Button to Test Page */}
+        <Link to="/test" className="p-3 bg-green-500 text-white rounded-md font-bold hover:bg-green-600 transition">
+        🧪 Test Page
+        </Link>
+
       </div>
     </main>
     </>
