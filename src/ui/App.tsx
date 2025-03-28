@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import YoutubePlayer from "./components/youtube-player";
 import TopRightWidget from "./components/top-right-widget";
 import QuestsPopup from "./components/popups/quests-popup";
@@ -20,6 +20,8 @@ function App() {
   const [activePopup, setActivePopup] = useState<string | null>(null)
   const [showBackgroundSelector, setShowBackgroundSelector] = useState(false)
   const [currentPlaylist, setCurrentPlaylist] = useState("PLhK5MCJLYPpcXgj7BI009xIrcLg8rZ2Jl")
+  const [centerClicks, setCenterClicks] = useState(0)
+  const [lastClickTime, setLastClickTime] = useState(0)
 
   useEffect(() => {
     const handleFullScreenChange = () => {
@@ -31,6 +33,26 @@ function App() {
       document.removeEventListener("fullscreenchange", handleFullScreenChange)
     }
   }, [])
+
+  // Navigate to test page after 5 consecutive clicks
+  useEffect(() => {
+    if (centerClicks >= 5) {
+      // Navigate to test page
+      window.location.hash = '/test'
+      setCenterClicks(0)
+    }
+  }, [centerClicks])
+
+  const handleCenterClick = useCallback(() => {
+    const currentTime = new Date().getTime()
+    // Reset counter if more than 2 seconds between clicks
+    if (currentTime - lastClickTime > 2000) {
+      setCenterClicks(1)
+    } else {
+      setCenterClicks(prev => prev + 1)
+    }
+    setLastClickTime(currentTime)
+  }, [lastClickTime])
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -142,16 +164,16 @@ function App() {
         />
       )}
 
+      {/* Invisible clickable area in the center of the page */}
+      <div 
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 z-10 cursor-default"
+        onClick={handleCenterClick}
+        aria-hidden="true"
+      ></div>
+
       {/* Bottom macOS style dock */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
         <Dock onItemClick={handleDockItemClick} activeItem={activePopup} />
-
-
-        {/* ✅ Navigation Button to Test Page */}
-        <Link to="/test" className="p-3 bg-green-500 text-white rounded-md font-bold hover:bg-green-600 transition">
-        🧪 Test Page
-        </Link>
-
       </div>
     </main>
     </>
