@@ -19,6 +19,7 @@ import { cn } from "../../lib/utils";
 interface QuestFormPopupProps {
   open: boolean;
   onClose: () => void;
+  onFormClosed?: () => void; // Optional callback when form is closed (either by cancel or submit)
   questToEdit?: Quest;
 }
 
@@ -36,7 +37,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function QuestFormPopup({ open, onClose, questToEdit }: QuestFormPopupProps) {
+export function QuestFormPopup({ open, onClose, onFormClosed, questToEdit }: QuestFormPopupProps) {
   const { quests, addQuest, updateQuest } = useQuest();
   const [availableDependencies, setAvailableDependencies] = useState<Quest[]>([]);
   
@@ -86,6 +87,10 @@ export function QuestFormPopup({ open, onClose, questToEdit }: QuestFormPopupPro
       addQuest(data);
     }
     onClose();
+    // Call the onFormClosed callback if provided
+    if (onFormClosed) {
+      onFormClosed();
+    }
   };
 
   return (
@@ -300,7 +305,7 @@ export function QuestFormPopup({ open, onClose, questToEdit }: QuestFormPopupPro
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-gray-700 border-gray-600 text-white max-h-60">
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="None">None</SelectItem>
                         {availableDependencies.map((quest) => (
                           <SelectItem key={quest.id} value={quest.id}>
                             {quest.title} ({quest.quest_type})
@@ -318,14 +323,20 @@ export function QuestFormPopup({ open, onClose, questToEdit }: QuestFormPopupPro
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  // Call the onFormClosed callback if provided
+                  if (onFormClosed) {
+                    onFormClosed();
+                  }
+                }}
                 className="bg-transparent border-gray-500 text-white hover:bg-gray-700"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                variant="translucent"
               >
                 {isEditMode ? "Update Quest" : "Create Quest"}
               </Button>

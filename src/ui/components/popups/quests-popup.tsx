@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { X, Plus } from "lucide-react";
-import { useQuest } from "../../context/QuestContext";
+import { useQuest, Quest } from "../../context/QuestContext";
 import { QuestCard } from "../quests/quest-card";
 import { QuestsManagePopup } from "../quests/quests-manage-popup";
+import { QuestFormPopup } from "../quests/quest-form-popup";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -15,6 +16,8 @@ interface QuestsPopupProps {
 export default function QuestsPopup({ onClose }: QuestsPopupProps) {
   const { getTaskQuests, toggleQuestStatus } = useQuest();
   const [manageQuestsOpen, setManageQuestsOpen] = useState(false);
+  const [formQuestOpen, setFormQuestOpen] = useState(false);
+  const [questToEdit, setQuestToEdit] = useState<Quest | undefined>(undefined);
 
   // Get all task-type quests
   const taskQuests = getTaskQuests();
@@ -90,7 +93,7 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
             <div className="text-sm text-gray-300">Progress: {progressText}</div>
             <Button
               onClick={() => setManageQuestsOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              variant="translucent"
             >
               <Plus className="h-4 w-4 mr-2" />
               Manage Quests
@@ -100,10 +103,35 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
       </div>
 
       {/* Manage Quests Popup */}
-      {manageQuestsOpen && (
+      {manageQuestsOpen && !formQuestOpen && (
         <QuestsManagePopup
           open={manageQuestsOpen}
           onClose={() => setManageQuestsOpen(false)}
+          onCreateQuest={() => {
+            setManageQuestsOpen(false);
+            setFormQuestOpen(true);
+          }}
+          onEditQuest={(quest) => {
+            setQuestToEdit(quest);
+            setFormQuestOpen(true);
+          }}
+        />
+      )}
+
+      {/* Quest Form Popup */}
+      {formQuestOpen && (
+        <QuestFormPopup
+          open={formQuestOpen}
+          onClose={() => {
+            setFormQuestOpen(false);
+            setQuestToEdit(undefined);
+          }}
+          onFormClosed={() => {
+            setFormQuestOpen(false);
+            setQuestToEdit(undefined);
+            setManageQuestsOpen(true);
+          }}
+          questToEdit={questToEdit}
         />
       )}
     </>
