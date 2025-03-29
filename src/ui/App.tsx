@@ -13,9 +13,20 @@ import BackgroundSelector from "./components/background-selector";
 import Dock from "./components/dock";
 import YouTubeAudioPlayer from "./components/youtube-player";
 import { Link } from "react-router-dom";
+import NowPlayingDisplay from "./components/playlist/now-playing-display";
 
 function App() {
-  const [currentBackground, setCurrentBackground] = useState("cyberpunk-city")
+
+  const backgrounds = {
+    "LOFI_GIRL": 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXRxdWN4cmZnaHRucmk0aGQ5bmJzcmw3ZW0zajAyajRuOHduYnozciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XbJYBCi69nyVOffLIU/giphy.gif',
+    "90s_RetroWave": 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExN3JlNGY5dGs5dDl2YnNoaDd3cjE5OHg2aGZ5dWE3Ym1yamhpZGc3ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/v2WuhMBzb3h5e/giphy.gif',
+    "SYNTH_WAVE": 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9ubTl0MzJheTFiN3JjYjFuamJmNGk5a2ZxcXd4d3h1YWhlenc3aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5e25aUTZPcI94uMZgv/giphy.gif',
+    "sunset_travel": 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW0yYTV1b3hwdzBzdjB3dDZhcjBqNzNrczVoNHhtdDN3NHNkbnloMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tjYS8yUChlzSmdKx9x/giphy.gif',
+    "CHILL_GUY": 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdmNyODFvcjltb3Zlcm91ejc4anF0MnFkMmhvZnBiNm5yZ2JzdjUxaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Tg9jENf7x11tdJnyMQ/giphy.gif',
+    "steampunk": 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExejhxZmt5ejA5Z2MxZWs5anJzbGFzODA2aXNlb3E2N2YwN25zaDBlcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/6rOVEO2yJiQ8YLMAKI/giphy.gif',
+  }
+
+  const [currentBackground, setCurrentBackground] = useState(backgrounds.LOFI_GIRL)
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [activePopup, setActivePopup] = useState<string | null>(null)
   const [showBackgroundSelector, setShowBackgroundSelector] = useState(false)
@@ -72,20 +83,12 @@ function App() {
     setActivePopup(activePopup === item ? null : item)
   }
 
-  const backgrounds = {
-    "cyberpunk-city": "url('/placeholder.svg?height=1080&width=1920')",
-    "lofi-cafe": "url('/placeholder.svg?height=1080&width=1920')",
-    "rainy-window": "url('/placeholder.svg?height=1080&width=1920')",
-    "night-sky": "url('/placeholder.svg?height=1080&width=1920')",
-    "sunset-beach": "url('/placeholder.svg?height=1080&width=1920')",
-  }
-
-  return (
+   return (
     <>
       <main
       className="relative h-screen w-screen overflow-hidden"
       style={{
-        backgroundImage: "url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXRxdWN4cmZnaHRucmk0aGQ5bmJzcmw3ZW0zajAyajRuOHduYnozciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XbJYBCi69nyVOffLIU/giphy.gif')",
+        backgroundImage: `url(${currentBackground})`,
         backgroundSize: "cover",
         backgroundPosition: "center"
       }}
@@ -94,10 +97,10 @@ function App() {
       <div className="absolute inset-0 bg-black/20 z-0"></div>
 
       {/* YouTube Player (hidden visually but audio plays) */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-4">
+      <div className="absolute top-4 left-4 z-20 flex gap-2">
+        {/* <NowPlayingDisplay {"travel vibes. [jazz hop /trackName chillhop / lofi]"} /> */}
         <YouTubeAudioPlayer />
-      </div>
-      
+      </div>      
 
       {/* Top-right widget */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
@@ -156,7 +159,7 @@ function App() {
       {/* Background selector */}
       {showBackgroundSelector && (
         <BackgroundSelector
-          backgrounds={Object.keys(backgrounds)}
+          backgrounds={backgrounds}
           currentBackground={currentBackground}
           onSelect={(bg) => {
             setCurrentBackground(bg)

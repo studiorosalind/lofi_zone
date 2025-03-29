@@ -42,6 +42,13 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+			retro: {
+				green: "#00FF00",
+				dark: "#003300",
+				lime: "#39FF14",
+				glow: "#00cc66",
+				base: "#0D0D0D",
+			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -84,11 +91,16 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+			marquee: {
+				"0%": { transform: "translateX(0%)" },
+				"100%": { transform: "translateX(-50%)" },
+			},
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+			'marquee': "marquee 10s linear infinite",
   		}
   	}
   },

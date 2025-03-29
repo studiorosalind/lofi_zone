@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Volume2, Play, Pause, SkipForward, SkipBack } from "lucide-react"
+import NowPlayingDisplay from "./playlist/now-playing-display"
 
 const YOUTUBE_LIVE_VIDEO_ID = "jfKfPfyJRdk" // ✅ Replace with a real YouTube Live ID
 
@@ -137,40 +138,43 @@ export default function YouTubeAudioPlayer() {
     
 
   return (
-    <div className="bg-black/30 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-4">
-      {/* Previous Track Button */}
-      <button onClick={prevTrack} className="hover:scale-110 transition-transform">
-        <SkipBack className="h-6 w-6" />
-      </button>
+    <div className="bg-black/30 backdrop-blur-md text-white px-4 py-2 rounded-lg flex flex-col items-center gap-2">
+      <NowPlayingDisplay trackName={"travel vibes. [jazz hop / chillhop / lofi]"} />
+      <div className=" text-white  rounded-lg flex items-center gap-4">
+          {/* Previous Track Button */}
+        <button onClick={prevTrack} className="hover:scale-110 transition-transform">
+          <SkipBack className="h-6 w-6" />
+        </button>
 
-      {/* Play/Pause Button */}
-      <button onClick={togglePlayPause} className="hover:scale-110 transition-transform">
-        {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-      </button>
+        {/* Play/Pause Button */}
+        <button onClick={togglePlayPause} className="hover:scale-110 transition-transform">
+          {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+        </button>
 
-      {/* Next Track Button */}
-      <button onClick={nextTrack} className="hover:scale-110 transition-transform">
-        <SkipForward className="h-6 w-6" />
-      </button>
+        {/* Next Track Button */}
+        <button onClick={nextTrack} className="hover:scale-110 transition-transform">
+          <SkipForward className="h-6 w-6" />
+        </button>
 
-      {/* Volume Control */}
-      <div className="flex items-center space-x-2 ml-4">
-        <Volume2 className="h-5 w-5" />
-        <div className="flex space-x-1">
-          {VOLUME_LEVELS.map((level) => (
-            <div
-              key={level}
-              className={`h-3 w-1 rounded-sm transition-all cursor-pointer ${
-                volume >= level ? "bg-green-500" : "bg-gray-600 opacity-50"
-              } hover:opacity-100`}
-              onClick={() => handleVolumeClick(level)}
-            />
-          ))}
+        {/* Volume Control */}
+        <div className="flex items-center space-x-2 ml-4">
+          <Volume2 className="h-5 w-5" />
+          <div className="flex space-x-1">
+            {VOLUME_LEVELS.map((level) => (
+              <div
+                key={level}
+                className={`h-3 w-1 rounded-sm transition-all cursor-pointer ${
+                  volume >= level ? "bg-green-500" : "bg-gray-600 opacity-50"
+                } hover:opacity-100`}
+                onClick={() => handleVolumeClick(level)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Hidden YouTube Player */}
-      <div ref={playerContainerRef} className="hidden"></div>
+        {/* Hidden YouTube Player */}
+        <div ref={playerContainerRef} className="hidden"></div>
+      </div>
     </div>
   )
 }

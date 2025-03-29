@@ -1,10 +1,15 @@
 "use client"
 import { X } from "lucide-react"
 
+// Define the background map type
+interface BackgroundMap {
+  [key: string]: string; // key: background name, value: background URL
+}
+
 interface BackgroundSelectorProps {
-  backgrounds: string[]
-  currentBackground: string
-  onSelect: (background: string) => void
+  backgrounds: BackgroundMap
+  currentBackground: string // This should be the key of the selected background
+  onSelect: (backgroundKey: string) => void
   onClose: () => void
 }
 
@@ -23,26 +28,27 @@ export default function BackgroundSelector({
             <X className="h-5 w-5" />
           </button>
         </div>
-
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {backgrounds.map((bg) => (
+          {Object.entries(backgrounds).map(([key, url]) => (
             <div
-              key={bg}
+              key={key}
               className={`
                 relative cursor-pointer rounded-lg overflow-hidden h-40
-                ${currentBackground === bg ? "ring-2 ring-white" : ""}
+                ${currentBackground === key ? "ring-2 ring-white" : ""}
               `}
-              onClick={() => onSelect(bg)}
+              onClick={() => onSelect(url)}
             >
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('/placeholder.svg?height=300&width=400')`,
-                  filter: currentBackground === bg ? "brightness(1.2)" : "brightness(0.8)",
+                  backgroundImage: `url(${url})`,
+                  filter: currentBackground === key ? "brightness(1.2)" : "brightness(0.8)",
                 }}
               ></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-white font-medium capitalize">{bg.replace(/-/g, " ")}</span>
+                <span className="text-white font-medium capitalize">
+                  {key.replace(/-/g, " ")}
+                </span>
               </div>
             </div>
           ))}
@@ -51,4 +57,3 @@ export default function BackgroundSelector({
     </div>
   )
 }
-

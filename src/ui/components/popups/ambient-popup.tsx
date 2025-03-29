@@ -1,7 +1,7 @@
 "use client"
-
 import { useState } from "react"
 import { X, Volume2, VolumeX } from "lucide-react"
+import { ScrollArea } from "../ui/scroll-area" // Adjust the import path as needed
 
 interface AmbientPopupProps {
   onClose: () => void
@@ -9,7 +9,6 @@ interface AmbientPopupProps {
 
 export default function AmbientPopup({ onClose }: AmbientPopupProps) {
   const [masterVolume, setMasterVolume] = useState(70)
-
   const ambientSounds = [
     { id: "rain", name: "Rain", active: true, volume: 50 },
     { id: "thunder", name: "Thunder", active: false, volume: 40 },
@@ -18,7 +17,6 @@ export default function AmbientPopup({ onClose }: AmbientPopupProps) {
     { id: "forest", name: "Forest Sounds", active: false, volume: 50 },
     { id: "waves", name: "Ocean Waves", active: false, volume: 40 },
   ]
-
   const [sounds, setSounds] = useState(ambientSounds)
 
   const toggleSound = (id: string) => {
@@ -38,7 +36,6 @@ export default function AmbientPopup({ onClose }: AmbientPopupProps) {
             <X className="h-5 w-5" />
           </button>
         </div>
-
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -56,33 +53,35 @@ export default function AmbientPopup({ onClose }: AmbientPopupProps) {
             className="w-full accent-white"
           />
         </div>
-
-        <div className="space-y-4">
-          {sounds.map((sound) => (
-            <div key={sound.id} className="p-3 bg-black/20 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{sound.name}</span>
-                <button
-                  onClick={() => toggleSound(sound.id)}
-                  className={`p-1 rounded-md ${sound.active ? "bg-white/20" : "bg-white/5"}`}
-                >
-                  {sound.active ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                </button>
+        
+        {/* ScrollArea added here - with a fixed height */}
+        <ScrollArea className="h-[40vh] pr-4">
+          <div className="space-y-4">
+            {sounds.map((sound) => (
+              <div key={sound.id} className="p-3 bg-black/20 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium">{sound.name}</span>
+                  <button
+                    onClick={() => toggleSound(sound.id)}
+                    className={`p-1 rounded-md ${sound.active ? "bg-white/20" : "bg-white/5"}`}
+                  >
+                    {sound.active ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  </button>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={sound.volume}
+                  onChange={(e) => updateVolume(sound.id, Number.parseInt(e.target.value))}
+                  className={`w-full ${sound.active ? "accent-white" : "accent-gray-600"}`}
+                  disabled={!sound.active}
+                />
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={sound.volume}
-                onChange={(e) => updateVolume(sound.id, Number.parseInt(e.target.value))}
-                className={`w-full ${sound.active ? "accent-white" : "accent-gray-600"}`}
-                disabled={!sound.active}
-              />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   )
 }
-
