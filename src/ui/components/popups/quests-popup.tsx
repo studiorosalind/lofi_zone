@@ -157,7 +157,8 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
           <ScrollArea className="h-[40vh] pr-4">
             <div className="space-y-3">
               {visibleQuests.length > 0 ? (
-                visibleQuests.map((quest) => (
+                visibleQuests.filter((quest) => quest.status === "in_progress")
+                .map((quest) => (
                   <QuestCard
                     key={quest.id}
                     quest={quest}
@@ -180,7 +181,7 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
             <div className="text-sm text-gray-300">Progress: {progressText}</div>
             <Button
               onClick={handleManageQuestsOpen}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              variant="translucent"
             >
               <Plus className="h-4 w-4 mr-2" />
               Manage Quests

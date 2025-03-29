@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Check } from "lucide-react";
 
 interface QuestCompletionEffectProps {
@@ -8,15 +8,19 @@ interface QuestCompletionEffectProps {
 
 export function QuestCompletionEffect({ show, onComplete }: QuestCompletionEffectProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     // Only run this effect when show changes from false to true
-    if (show && !isVisible) {
+    if (show) {
       setIsVisible(true);
       
       // Create particles
       const particles: HTMLDivElement[] = [];
       const container = document.createElement("div");
+      containerRef.current = container;
+      
       container.style.position = "fixed";
       container.style.top = "0";
       container.style.left = "0";
@@ -66,54 +70,70 @@ export function QuestCompletionEffect({ show, onComplete }: QuestCompletionEffec
       }
       
       // Remove the effect after animation completes
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        if (document.body.contains(container)) {
-          document.body.removeChild(container);
-        }
-        onComplete();
+      animationTimerRef.current = setTimeout(() => {
+        cleanup();
       }, 2000);
-      
-      return () => {
-        clearTimeout(timer);
-        if (document.body.contains(container)) {
-          document.body.removeChild(container);
-        }
-      };
     }
-  }, [show, isVisible, onComplete]);
+    
+    return () => {
+      // Clean up if component unmounts
+      cleanup();
+    };
+  }, [show, onComplete]);
+  
+  // Separate cleanup function to ensure consistent cleanup logic
+  const cleanup = () => {
+    // Clear the animation timer
+    if (animationTimerRef.current) {
+      clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+    
+    // Remove the container element if it exists
+    if (containerRef.current && document.body.contains(containerRef.current)) {
+      document.body.removeChild(containerRef.current);
+      containerRef.current = null;
+    }
+    
+    // Reset visibility state
+    setIsVisible(false);
+    
+    // Call onComplete callback
+    onComplete();
+  };
+  
+  // Only render the checkmark when isVisible is true
+  if (!isVisible) {
+    return null;
+  }
   
   return (
     <>
-      {isVisible && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <div 
-            className="bg-green-500 rounded-full p-6 shadow-lg animate-pulse"
-            style={{
-              animation: "pulse 1s infinite, scale-up 0.5s ease-out"
-            }}
-          >
-            <Check className="h-12 w-12 text-white" />
-          </div>
+      <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+        <div 
+          className="bg-green-500 rounded-full p-6 shadow-lg"
+          style={{
+            animation: "pulse 1s infinite, scale-up 0.5s ease-out"
+          }}
+        >
+          <Check className="h-12 w-12 text-white" />
         </div>
-      )}
+      </div>
       
-      {/* Add keyframes for the scale-up animation */}
-      {isVisible && (
-        <style>
-          {`
-            @keyframes scale-up {
-              0% { transform: scale(0.5); opacity: 0; }
-              100% { transform: scale(1); opacity: 1; }
-            }
-            @keyframes pulse {
-              0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-              70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
-              100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-            }
-          `}
-        </style>
-      )}
+      {/* Add keyframes for the animations */}
+      <style>
+        {`
+          @keyframes scale-up {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+          }
+        `}
+      </style>
     </>
   );
 }

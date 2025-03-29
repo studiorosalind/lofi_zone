@@ -17,7 +17,7 @@ export function QuickQuestInput({ onQuestAdded }: QuickQuestInputProps) {
       addQuest({
         title: title.trim(),
         priority: "middle",
-        status: "planned",
+        status: "in_progress",
         quest_type: "task",
       });
       
@@ -46,7 +46,7 @@ export function QuickQuestInput({ onQuestAdded }: QuickQuestInputProps) {
       <Button
         onClick={handleAddQuest}
         disabled={!title.trim()}
-        className="bg-blue-600 hover:bg-blue-700 text-white"
+        variant="translucent"
         size="icon"
       >
         <Plus className="h-4 w-4" />

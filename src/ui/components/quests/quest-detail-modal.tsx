@@ -43,7 +43,9 @@ export function QuestDetailModal({ quest, open, onClose }: QuestDetailModalProps
   
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-gray-800/95 backdrop-blur-xl text-white border-gray-700 max-w-md">
+      <DialogContent 
+      hideCloseButton
+      className="bg-gray-800/95 backdrop-blur-xl text-white border-gray-700 max-w-md">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-xl">{quest.title}</DialogTitle>
           <Button 

@@ -44,7 +44,9 @@ export function QuestsManagePopup({ open, onClose, onCreateQuest, onEditQuest }:
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()} modal={true}>
-      <DialogContent className="bg-gray-800/95 backdrop-blur-xl text-white border-gray-700 max-w-2xl max-h-[90vh]">
+      <DialogContent 
+      hideCloseButton
+      className="bg-gray-800/95 backdrop-blur-xl text-white border-gray-700 max-w-2xl max-h-[90vh]">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Manage Quests</DialogTitle>
           <Button 
@@ -63,7 +65,7 @@ export function QuestsManagePopup({ open, onClose, onCreateQuest, onEditQuest }:
           </div>
           <Button 
             onClick={onCreateQuest}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            variant="translucent"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create New Quest
@@ -296,7 +298,7 @@ export function QuestsManagePopup({ open, onClose, onCreateQuest, onEditQuest }:
             </div>
           )}
           
-          {chapters.length === 0 && orphanedPlots.length === 0 && orphanedTasks.length === 0 && (
+          {/* {chapters.length === 0 && orphanedPlots.length === 0 && orphanedTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-10 text-gray-400">
               <div className="text-center mb-4">
                 No quests found. Create your first quest to get started.
@@ -309,7 +311,7 @@ export function QuestsManagePopup({ open, onClose, onCreateQuest, onEditQuest }:
                 Create New Quest
               </Button>
             </div>
-          )}
+          )} */}
         </ScrollArea>
       </DialogContent>
     </Dialog>

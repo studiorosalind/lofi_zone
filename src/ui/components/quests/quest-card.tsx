@@ -36,6 +36,12 @@ export function QuestCard({
     done: "bg-green-500/20 border-green-500",
   };
 
+  // Handle status toggle with stopPropagation to prevent card click
+  const handleStatusToggle = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Prevent card click
+    onToggleStatus(id);
+  };
+
   return (
     <div 
       className={cn(
@@ -47,7 +53,7 @@ export function QuestCard({
     >
       {/* Status indicator */}
       <button
-        onClick={() => onToggleStatus(quest.id)}
+        onClick={(e) => handleStatusToggle(e, quest.id)}
         className={cn(
           "h-6 w-6 rounded-full flex items-center justify-center border",
           statusColors[quest.status]
