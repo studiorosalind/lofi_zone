@@ -1,11 +1,14 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { X, Plus } from "lucide-react";
 import { useQuest, Quest } from "../../context/QuestContext";
 import { QuestCard } from "../quests/quest-card";
 import { QuestsManagePopup } from "../quests/quests-manage-popup";
 import { QuestFormPopup } from "../quests/quest-form-popup";
+import { QuestDetailModal } from "../quests/quest-detail-modal";
+import { QuestCompletionEffect } from "../quests/quest-completion-effect";
+import { QuickQuestInput } from "../quests/quick-quest-input";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -18,47 +21,127 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
   const [manageQuestsOpen, setManageQuestsOpen] = useState(false);
   const [formQuestOpen, setFormQuestOpen] = useState(false);
   const [questToEdit, setQuestToEdit] = useState<Quest | undefined>(undefined);
+  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
+  const [completedQuestId, setCompletedQuestId] = useState<string | null>(null);
+  const [showCompletionEffect, setShowCompletionEffect] = useState(false);
 
   // Get all task-type quests
   const taskQuests = getTaskQuests();
+  
+  // Filter and sort quests - use useMemo to avoid recalculating on every render
+  const visibleQuests = useMemo(() => {
+    // Filter out completed quests that should be hidden
+    const filtered = taskQuests.filter(quest => 
+      quest.status !== "done" || !completedQuestId || quest.id !== completedQuestId
+    );
+    
+    // Sort quests
+    return [...filtered].sort((a, b) => {
+      // Status sorting
+      const statusOrder = { in_progress: 0, planned: 1, done: 2 };
+      if (statusOrder[a.status] !== statusOrder[b.status]) {
+        return statusOrder[a.status] - statusOrder[b.status];
+      }
 
-  // Sort quests by:
-  // 1. Status (in_progress > planned > done)
-  // 2. Priority (high > middle > low)
-  // 3. Deadline (ascending)
-  // 4. Estimated time (ascending)
-  const sortedQuests = [...taskQuests].sort((a, b) => {
-    // Status sorting
-    const statusOrder = { in_progress: 0, planned: 1, done: 2 };
-    if (statusOrder[a.status] !== statusOrder[b.status]) {
-      return statusOrder[a.status] - statusOrder[b.status];
-    }
+      // Priority sorting
+      const priorityOrder = { high: 0, middle: 1, low: 2 };
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
 
-    // Priority sorting
-    const priorityOrder = { high: 0, middle: 1, low: 2 };
-    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    }
+      // Deadline sorting (if both have deadlines)
+      if (a.deadline && b.deadline) {
+        return a.deadline.getTime() - b.deadline.getTime();
+      } else if (a.deadline) {
+        return -1; // a has deadline, b doesn't
+      } else if (b.deadline) {
+        return 1; // b has deadline, a doesn't
+      }
 
-    // Deadline sorting (if both have deadlines)
-    if (a.deadline && b.deadline) {
-      return a.deadline.getTime() - b.deadline.getTime();
-    } else if (a.deadline) {
-      return -1; // a has deadline, b doesn't
-    } else if (b.deadline) {
-      return 1; // b has deadline, a doesn't
-    }
-
-    // Estimated time sorting
-    const aTime = a.estimated_time || 25;
-    const bTime = b.estimated_time || 25;
-    return aTime - bTime;
-  });
+      // Estimated time sorting
+      const aTime = a.estimated_time || 25;
+      const bTime = b.estimated_time || 25;
+      return aTime - bTime;
+    });
+  }, [taskQuests, completedQuestId]);
 
   // Calculate progress
-  const completedQuests = taskQuests.filter(q => q.status === "done").length;
-  const totalQuests = taskQuests.length;
-  const progressText = `${completedQuests}/${totalQuests}`;
+  const progressText = useMemo(() => {
+    const completedQuests = taskQuests.filter(q => q.status === "done").length;
+    const totalQuests = taskQuests.length;
+    return `${completedQuests}/${totalQuests}`;
+  }, [taskQuests]);
+
+  // Custom toggle status handler to show completion effect - use useCallback to avoid recreating on every render
+  const handleToggleStatus = useCallback((id: string) => {
+    const quest = taskQuests.find(q => q.id === id);
+    if (quest && quest.status !== "done") {
+      // If marking as done, show completion effect
+      setCompletedQuestId(id);
+      setShowCompletionEffect(true);
+    } else {
+      // If unmarking as done, just toggle without effects
+      setCompletedQuestId(null);
+    }
+    // The actual toggle happens in the toggleQuestStatus function
+    toggleQuestStatus(id);
+  }, [taskQuests, toggleQuestStatus]);
+  
+  // Handle completion effect finished - use useCallback to avoid recreating on every render
+  const handleCompletionEffectFinished = useCallback(() => {
+    setShowCompletionEffect(false);
+    // Keep the completedQuestId to keep filtering it out
+  }, []);
+
+  // Handle quest card click - use useCallback to avoid recreating on every render
+  const handleQuestCardClick = useCallback((quest: Quest) => {
+    setSelectedQuest(quest);
+  }, []);
+
+  // Handle quest detail modal close - use useCallback to avoid recreating on every render
+  const handleQuestDetailClose = useCallback(() => {
+    setSelectedQuest(null);
+  }, []);
+
+  // Handle manage quests open - use useCallback to avoid recreating on every render
+  const handleManageQuestsOpen = useCallback(() => {
+    setManageQuestsOpen(true);
+  }, []);
+
+  // Handle manage quests close - use useCallback to avoid recreating on every render
+  const handleManageQuestsClose = useCallback(() => {
+    setManageQuestsOpen(false);
+  }, []);
+
+  // Handle create quest - use useCallback to avoid recreating on every render
+  const handleCreateQuest = useCallback(() => {
+    setManageQuestsOpen(false);
+    setFormQuestOpen(true);
+  }, []);
+
+  // Handle edit quest - use useCallback to avoid recreating on every render
+  const handleEditQuest = useCallback((quest: Quest) => {
+    setQuestToEdit(quest);
+    setFormQuestOpen(true);
+  }, []);
+
+  // Handle form close - use useCallback to avoid recreating on every render
+  const handleFormClose = useCallback(() => {
+    setFormQuestOpen(false);
+    setQuestToEdit(undefined);
+  }, []);
+
+  // Handle form closed - use useCallback to avoid recreating on every render
+  const handleFormClosed = useCallback(() => {
+    setFormQuestOpen(false);
+    setQuestToEdit(undefined);
+    setManageQuestsOpen(true);
+  }, []);
+
+  // Handle quest added - use useCallback to avoid recreating on every render
+  const handleQuestAdded = useCallback(() => {
+    setCompletedQuestId(null);
+  }, []);
 
   return (
     <>
@@ -73,12 +156,13 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
 
           <ScrollArea className="h-[40vh] pr-4">
             <div className="space-y-3">
-              {sortedQuests.length > 0 ? (
-                sortedQuests.map((quest) => (
+              {visibleQuests.length > 0 ? (
+                visibleQuests.map((quest) => (
                   <QuestCard
                     key={quest.id}
                     quest={quest}
-                    onToggleStatus={toggleQuestStatus}
+                    onToggleStatus={handleToggleStatus}
+                    onCardClick={handleQuestCardClick}
                   />
                 ))
               ) : (
@@ -89,11 +173,14 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
             </div>
           </ScrollArea>
 
+          {/* Quick Quest Input */}
+          <QuickQuestInput onQuestAdded={handleQuestAdded} />
+          
           <div className="mt-4 pt-4 border-t border-white/20 flex justify-between items-center">
             <div className="text-sm text-gray-300">Progress: {progressText}</div>
             <Button
-              onClick={() => setManageQuestsOpen(true)}
-              variant="translucent"
+              onClick={handleManageQuestsOpen}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Manage Quests
@@ -106,15 +193,9 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
       {manageQuestsOpen && !formQuestOpen && (
         <QuestsManagePopup
           open={manageQuestsOpen}
-          onClose={() => setManageQuestsOpen(false)}
-          onCreateQuest={() => {
-            setManageQuestsOpen(false);
-            setFormQuestOpen(true);
-          }}
-          onEditQuest={(quest) => {
-            setQuestToEdit(quest);
-            setFormQuestOpen(true);
-          }}
+          onClose={handleManageQuestsClose}
+          onCreateQuest={handleCreateQuest}
+          onEditQuest={handleEditQuest}
         />
       )}
 
@@ -122,18 +203,26 @@ export default function QuestsPopup({ onClose }: QuestsPopupProps) {
       {formQuestOpen && (
         <QuestFormPopup
           open={formQuestOpen}
-          onClose={() => {
-            setFormQuestOpen(false);
-            setQuestToEdit(undefined);
-          }}
-          onFormClosed={() => {
-            setFormQuestOpen(false);
-            setQuestToEdit(undefined);
-            setManageQuestsOpen(true);
-          }}
+          onClose={handleFormClose}
+          onFormClosed={handleFormClosed}
           questToEdit={questToEdit}
         />
       )}
+      
+      {/* Quest Detail Modal */}
+      {selectedQuest && (
+        <QuestDetailModal
+          quest={selectedQuest}
+          open={!!selectedQuest}
+          onClose={handleQuestDetailClose}
+        />
+      )}
+      
+      {/* Quest Completion Effect */}
+      <QuestCompletionEffect
+        show={showCompletionEffect}
+        onComplete={handleCompletionEffectFinished}
+      />
     </>
   );
 }

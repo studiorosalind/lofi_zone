@@ -287,8 +287,8 @@ export function QuestFormPopup({ open, onClose, onFormClosed, questToEdit }: Que
               </>
             )}
 
-            {/* Dependent On - only show when not editing */}
-            {!isEditMode && availableDependencies.length > 0 && (
+            {/* Dependent On */}
+            {availableDependencies.length > 0 && (
               <FormField
                 control={form.control}
                 name="dependent_on"

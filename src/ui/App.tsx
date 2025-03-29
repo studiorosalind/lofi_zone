@@ -20,6 +20,8 @@ function App() {
   const [activePopup, setActivePopup] = useState<string | null>(null)
   const [showBackgroundSelector, setShowBackgroundSelector] = useState(false)
   const [currentPlaylist, setCurrentPlaylist] = useState("PLhK5MCJLYPpcXgj7BI009xIrcLg8rZ2Jl")
+
+  // Dev Only
   const [centerClicks, setCenterClicks] = useState(0)
   const [lastClickTime, setLastClickTime] = useState(0)
 

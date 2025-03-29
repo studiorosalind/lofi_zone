@@ -1,4 +1,4 @@
-import { Check, Clock, Calendar, MoreVertical } from "lucide-react";
+import { Check, Clock, Calendar, MoreVertical, Trash, Edit } from "lucide-react";
 import { Quest } from "../../context/QuestContext";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "../../lib/utils";
@@ -7,10 +7,23 @@ interface QuestCardProps {
   quest: Quest;
   onToggleStatus: (id: string) => void;
   onOpenMenu?: (id: string, event: React.MouseEvent) => void;
+  onCardClick?: (quest: Quest) => void;
+  onDelete?: (id: string) => void;
+  onEdit?: (quest: Quest) => void;
   compact?: boolean;
+  showMenuOptions?: boolean;
 }
 
-export function QuestCard({ quest, onToggleStatus, onOpenMenu, compact = false }: QuestCardProps) {
+export function QuestCard({ 
+  quest, 
+  onToggleStatus, 
+  onOpenMenu, 
+  onCardClick,
+  onDelete,
+  onEdit,
+  compact = false,
+  showMenuOptions = false
+}: QuestCardProps) {
   const priorityColors = {
     high: "text-red-400",
     middle: "text-yellow-400",
@@ -27,8 +40,10 @@ export function QuestCard({ quest, onToggleStatus, onOpenMenu, compact = false }
     <div 
       className={cn(
         "flex items-center gap-3 p-3 bg-black/20 rounded-lg transition-all",
-        quest.status === "done" ? "opacity-70" : "opacity-100"
+        quest.status === "done" ? "opacity-70" : "opacity-100",
+        onCardClick ? "cursor-pointer hover:bg-black/30" : ""
       )}
+      onClick={onCardClick ? () => onCardClick(quest) : undefined}
     >
       {/* Status indicator */}
       <button
@@ -72,13 +87,47 @@ export function QuestCard({ quest, onToggleStatus, onOpenMenu, compact = false }
       </div>
 
       {/* Action buttons */}
-      {onOpenMenu && (
+      {onOpenMenu && !showMenuOptions && (
         <button 
-          onClick={(e) => onOpenMenu(quest.id, e)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            onOpenMenu(quest.id, e);
+          }}
           className="p-1 hover:bg-white/10 rounded-full"
         >
           <MoreVertical className="h-4 w-4 text-gray-400" />
         </button>
+      )}
+      
+      {/* Direct action buttons when showMenuOptions is true */}
+      {showMenuOptions && (
+        <div className="flex items-center gap-1">
+          {onEdit && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card click
+                onEdit(quest);
+              }}
+              className="p-1 hover:bg-white/10 rounded-full text-blue-400 hover:text-blue-300"
+              title="Edit"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
+          )}
+          
+          {onDelete && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card click
+                onDelete(quest.id);
+              }}
+              className="p-1 hover:bg-white/10 rounded-full text-red-400 hover:text-red-300"
+              title="Delete"
+            >
+              <Trash className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
