@@ -20,10 +20,12 @@ export default function YouTubeAudioPlayer() {
 
   const TRACKS = [
     "jfKfPfyJRdk", // 🎵 Replace with actual YouTube Live Video IDs
+    "Kus75rHg930",
     "qH3fETPsqXU",
     "dtVwR4uMnfg",
     "4xDzrJKXOOY",
-    "B-8pRTqDhwQ"
+    "B-8pRTqDhwQ",
+    "bKKfFN7L6lc"
   ]
   
 
