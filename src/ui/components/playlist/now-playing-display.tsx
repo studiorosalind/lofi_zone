@@ -1,11 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState, useEffect } from "react";
+import { usePlaylist } from "../../context/PlaylistContext";
 
-interface NowPlayingDisplayProps {
-  trackName: string;
-}
-
-export default function NowPlayingDisplay({ trackName }: NowPlayingDisplayProps) {
+export default function NowPlayingDisplay() {
+  const { currentTrack } = usePlaylist();
+  const trackName = currentTrack?.title || "Nothing playing";
   return (
     <div className="flex items-center space-x-2 overflow-hidden">
       <span 

@@ -1,41 +1,29 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Volume2, Play, Pause, SkipForward, SkipBack } from "lucide-react"
 import NowPlayingDisplay from "./playlist/now-playing-display"
-
-const YOUTUBE_LIVE_VIDEO_ID = "jfKfPfyJRdk" // ✅ Replace with a real YouTube Live ID
+import { usePlaylist } from "../context/PlaylistContext"
 
 const VOLUME_LEVELS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100] // 🎚 Defines how many "battery bars" exist
 
-
 export default function YouTubeAudioPlayer() {
-  const [trackIndex, setTrackIndex] = useState(0) // 🎵 Track Index
+  const { 
+    currentTrack, 
+    nextTrack: goToNextTrack, 
+    prevTrack: goToPrevTrack 
+  } = usePlaylist();
+  
   const [isPlaying, setIsPlaying] = useState(true) // ✅ Starts playing automatically
   const [volume, setVolume] = useState(50) // ✅ Default volume at 50%
   const [playerReady, setPlayerReady] = useState(false)
   const playerRef = useRef<YT.Player | null>(null)
   const playerContainerRef = useRef<HTMLDivElement>(null)
-
-  const TRACKS = [
-    "jfKfPfyJRdk", // 🎵 Replace with actual YouTube Live Video IDs
-    "Kus75rHg930",
-    "qH3fETPsqXU",
-    "dtVwR4uMnfg",
-    "4xDzrJKXOOY",
-    "B-8pRTqDhwQ",
-    "bKKfFN7L6lc"
-  ]
   
-
-  useEffect(() => {
-    console.log("🎵 YouTubeAudioPlayer Mounted!");
-  }, []);
-  
-
   // ✅ Load YouTube API on mount
   useEffect(() => {    
+    if (!currentTrack) return;
+    
     if (window.YT && window.YT.Player) {
       initializePlayer()
       return
@@ -53,11 +41,11 @@ export default function YouTubeAudioPlayer() {
         playerRef.current.destroy()
       }
     }
-  }, [trackIndex])
+  }, [currentTrack])
 
   // ✅ Initialize player when API is ready
   const initializePlayer = () => {
-    if (!playerContainerRef.current) return
+    if (!playerContainerRef.current || !currentTrack) return
 
     if (playerRef.current) {
       playerRef.current.destroy() // Remove old player
@@ -71,7 +59,7 @@ export default function YouTubeAudioPlayer() {
 
     try {
       playerRef.current = new YT.Player("youtube-player", {
-        videoId: TRACKS[trackIndex],
+        videoId: currentTrack.id,
         height: "0", // ✅ Hide the video
         width: "0", // ✅ Hide the video
         playerVars: {
@@ -102,12 +90,11 @@ export default function YouTubeAudioPlayer() {
     }
   }
 
-// ✅ Set Volume when clicking bars
-    const handleVolumeClick = (level: number) => {
-        setVolume(level)
-    }
+  // ✅ Set Volume when clicking bars
+  const handleVolumeClick = (level: number) => {
+    setVolume(level)
+  }
     
-
   // ✅ Handle volume change
   useEffect(() => {
     if (playerRef.current && playerReady) {
@@ -128,23 +115,12 @@ export default function YouTubeAudioPlayer() {
     }
   }
 
-    // ✅ Next Track
-    const nextTrack = () => {
-        setTrackIndex((prev) => (prev + 1) % TRACKS.length)
-    }
-    
-    // ✅ Previous Track
-    const prevTrack = () => {
-        setTrackIndex((prev) => (prev - 1 + TRACKS.length) % TRACKS.length)
-    }
-    
-
   return (
     <div className="bg-black/30 backdrop-blur-md text-white px-4 py-2 rounded-lg flex flex-col items-center gap-2">
-      <NowPlayingDisplay trackName={"travel vibes. [jazz hop / chillhop / lofi]"} />
-      <div className=" text-white  rounded-lg flex items-center gap-4">
-          {/* Previous Track Button */}
-        <button onClick={prevTrack} className="hover:scale-110 transition-transform">
+      <NowPlayingDisplay />
+      <div className="text-white rounded-lg flex items-center gap-4">
+        {/* Previous Track Button */}
+        <button onClick={goToPrevTrack} className="hover:scale-110 transition-transform">
           <SkipBack className="h-6 w-6" />
         </button>
 
@@ -154,7 +130,7 @@ export default function YouTubeAudioPlayer() {
         </button>
 
         {/* Next Track Button */}
-        <button onClick={nextTrack} className="hover:scale-110 transition-transform">
+        <button onClick={goToNextTrack} className="hover:scale-110 transition-transform">
           <SkipForward className="h-6 w-6" />
         </button>
 
@@ -180,4 +156,3 @@ export default function YouTubeAudioPlayer() {
     </div>
   )
 }
-

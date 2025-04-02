@@ -2,7 +2,6 @@
 'client'
 
 import { useState, useEffect, useCallback } from "react";
-import YoutubePlayer from "./components/youtube-player";
 import TopRightWidget from "./components/top-right-widget";
 import QuestsPopup from "./components/popups/quests-popup";
 import PomodoroPopup from "./components/popups/pomodoro-popup";
@@ -13,7 +12,6 @@ import BackgroundSelector from "./components/background-selector";
 import Dock from "./components/dock";
 import YouTubeAudioPlayer from "./components/youtube-player";
 import { Link } from "react-router-dom";
-import NowPlayingDisplay from "./components/playlist/now-playing-display";
 
 function App() {
 
@@ -30,7 +28,6 @@ function App() {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [activePopup, setActivePopup] = useState<string | null>(null)
   const [showBackgroundSelector, setShowBackgroundSelector] = useState(false)
-  const [currentPlaylist, setCurrentPlaylist] = useState("PLhK5MCJLYPpcXgj7BI009xIrcLg8rZ2Jl")
 
   // Dev Only
   const [centerClicks, setCenterClicks] = useState(0)
@@ -98,7 +95,6 @@ function App() {
 
       {/* YouTube Player (hidden visually but audio plays) */}
       <div className="absolute top-4 left-4 z-20 flex gap-2">
-        {/* <NowPlayingDisplay {"travel vibes. [jazz hop /trackName chillhop / lofi]"} /> */}
         <YouTubeAudioPlayer />
       </div>      
 
@@ -148,11 +144,7 @@ function App() {
         <ThemePopup onClose={() => setActivePopup(null)} onBackgroundSelect={() => setShowBackgroundSelector(true)} />
       )}
       {activePopup === "playlists" && (
-        <PlaylistsPopup
-          onClose={() => setActivePopup(null)}
-          onPlaylistSelect={(id) => setCurrentPlaylist(id)}
-          currentPlaylist={currentPlaylist}
-        />
+        <PlaylistsPopup onClose={() => setActivePopup(null)} />
       )}
       {activePopup === "ambient" && <AmbientPopup onClose={() => setActivePopup(null)} />}
 
