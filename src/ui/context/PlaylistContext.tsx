@@ -34,47 +34,43 @@ const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined
 const samplePlaylists: Playlist[] = [
   {
     id: "PLhK5MCJLYPpcXgj7BI009xIrcLg8rZ2Jl",
-    name: "Lofi Hip Hop - Beats to Relax/Study to",
+    name: "LOFI GIRL",
     tracks: [
-      { id: "jfKfPfyJRdk", title: "lofi hip hop radio - beats to relax/study to", source_type: "YOUTUBE" },
-      { id: "Kus75rHg930", title: "Chill Study Beats 4 • jazz & lofi hiphop", source_type: "YOUTUBE" },
-      { id: "qH3fETPsqXU", title: "Lofi Coding Session • work & study music", source_type: "YOUTUBE" },
+      { id: "jfKfPfyJRdk", title: "LOFI GIRL - beats to relax/study to", source_type: "YOUTUBE" },
     ]
   },
   {
     id: "PLQkQfzsIUwRZ9FVWVE8KpIOVkQsUZH9t8",
     name: "Lofi Coffee Shop",
     tracks: [
-      { id: "dtVwR4uMnfg", title: "Coffee Shop Radio • 24/7 lofi & jazzy hip-hop beats", source_type: "YOUTUBE" },
-      { id: "4xDzrJKXOOY", title: "Cozy Coffee Shop • Relaxing Jazz Music", source_type: "YOUTUBE" },
-      { id: "B-8pRTqDhwQ", title: "Morning Coffee Jazz • Relaxing Bossa Nova Music", source_type: "YOUTUBE" },
+      { id: "0H87zumc8DU", title: "Coffee Shop Radio • 24/7 lofi & jazzy hip-hop beats", source_type: "YOUTUBE" },
     ]
   },
   {
     id: "PLOzDu-MXXLliO9fBNZOQTBDddQBrX0vTc",
-    name: "Aesthetic Lofi Mix",
+    name: "SynthWave",
     tracks: [
-      { id: "bKKfFN7L6lc", title: "Aesthetic Lofi Mix • Chill & Relax", source_type: "YOUTUBE" },
-      { id: "lTRiuFIWV54", title: "1 A.M Study Session • lofi hip hop/chill beats", source_type: "YOUTUBE" },
-      { id: "BTYAsjAVa3I", title: "Rainy Night Coffee Shop • lofi hip hop mix", source_type: "YOUTUBE" },
+      { id: "4xDzrJKXOOY", title: "SYNTHWAVE • GAME & FOCUS", source_type: "YOUTUBE" },
+      // { id: "lTRiuFIWV54", title: "1 A.M Study Session • lofi hip hop/chill beats", source_type: "YOUTUBE" },
+      // { id: "BTYAsjAVa3I", title: "Rainy Night Coffee Shop • lofi hip hop mix", source_type: "YOUTUBE" },
     ]
   },
   {
     id: "PLvTTekbgYTB-rRpEyNdPQVYwOSxISHLMc",
-    name: "Ambient Study Music",
+    name: "Tokyo CityPop Lofi",
     tracks: [
-      { id: "sjkrrmBnpGE", title: "Ambient Study Music • Focus and Concentration", source_type: "YOUTUBE" },
-      { id: "tNkZsRW7h2c", title: "Space Ambient Music • Deep Focus and Relaxation", source_type: "YOUTUBE" },
-      { id: "77ZozI0rw7w", title: "Ambient Music for Studying • Improve Focus and Concentration", source_type: "YOUTUBE" },
+      { id: "bJt8lSOMQ4k", title: "Tokyo CityPop Lofi • Focus and Concentration", source_type: "YOUTUBE" },
+      // { id: "tNkZsRW7h2c", title: "Space Ambient Music • Deep Focus and Relaxation", source_type: "YOUTUBE" },
+      // { id: "77ZozI0rw7w", title: "Ambient Music for Studying • Improve Focus and Concentration", source_type: "YOUTUBE" },
     ]
   },
   {
     id: "PLOfcuKHGZ0eO9nLAL6OjhZ27AEH21Zk0-",
-    name: "Chill Gaming Mix",
+    name: "LOFI HIPHOP",
     tracks: [
-      { id: "c9VQye6P8k0", title: "Chill Gaming Music Mix • Relaxing Background Music", source_type: "YOUTUBE" },
-      { id: "qEHZOJZQfGE", title: "Gaming Music Mix • Electronic & Chill Beats", source_type: "YOUTUBE" },
-      { id: "7NOSDKb0HlU", title: "Synthwave Gaming Mix • Retrowave & Outrun", source_type: "YOUTUBE" },
+      // { id: "c9VQye6P8k0", title: "Chill Gaming Music Mix • Relaxing Background Music", source_type: "YOUTUBE" },
+      // { id: "qEHZOJZQfGE", title: "Gaming Music Mix • Electronic & Chill Beats", source_type: "YOUTUBE" },
+      { id: "n61ULEU7CO0", title: "LOFI HIPHOP • STUDY and FOCUS", source_type: "YOUTUBE" },
     ]
   },
 ];
@@ -108,19 +104,27 @@ export const PlaylistProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [currentPlaylistId, currentTrackIndex, playlists]);
 
-  // Next track function
+  // Next track function - changes to the next playlist
   const nextTrack = () => {
-    const playlist = getPlaylistById(currentPlaylistId);
-    if (playlist) {
-      setCurrentTrackIndex((prev) => (prev + 1) % playlist.tracks.length);
+    const currentPlaylistIndex = playlists.findIndex(playlist => playlist.id === currentPlaylistId);
+    if (currentPlaylistIndex !== -1) {
+      // Move to the next playlist in the array
+      const nextPlaylistIndex = (currentPlaylistIndex + 1) % playlists.length;
+      setCurrentPlaylistId(playlists[nextPlaylistIndex].id);
+      // Reset track index to 0 for the new playlist
+      setCurrentTrackIndex(0);
     }
   };
 
-  // Previous track function
+  // Previous track function - changes to the previous playlist
   const prevTrack = () => {
-    const playlist = getPlaylistById(currentPlaylistId);
-    if (playlist) {
-      setCurrentTrackIndex((prev) => (prev - 1 + playlist.tracks.length) % playlist.tracks.length);
+    const currentPlaylistIndex = playlists.findIndex(playlist => playlist.id === currentPlaylistId);
+    if (currentPlaylistIndex !== -1) {
+      // Move to the previous playlist in the array
+      const prevPlaylistIndex = (currentPlaylistIndex - 1 + playlists.length) % playlists.length;
+      setCurrentPlaylistId(playlists[prevPlaylistIndex].id);
+      // Reset track index to 0 for the new playlist
+      setCurrentTrackIndex(0);
     }
   };
 
