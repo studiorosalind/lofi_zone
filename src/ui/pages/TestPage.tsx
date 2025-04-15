@@ -57,19 +57,19 @@ export default function TestPage() {
                 <div className="flex items-center gap-3 bg-gray-700/50 p-4 rounded-lg">
                   <User className="h-10 w-10 text-blue-400" />
                   <div>
-                    <h3 className="text-xl font-medium">{user.username}</h3>
-                    <p className="text-gray-400">{user.email}</p>
+                    <h3 className="text-xl font-medium">{user.user_name}</h3>
+                    <p className="text-gray-400">{user.user_credential_id || 'No email'}</p>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-700/50 p-4 rounded-lg">
                     <h4 className="text-sm font-medium text-gray-400 mb-1">User ID</h4>
-                    <p className="font-mono">{user.id}</p>
+                    <p className="font-mono">{user.lofi_zone_user_id}</p>
                   </div>
                   <div className="bg-gray-700/50 p-4 rounded-lg">
-                    <h4 className="text-sm font-medium text-gray-400 mb-1">Last Login</h4>
-                    <p className="font-mono">{new Date(user.last_login).toLocaleString()}</p>
+                    <h4 className="text-sm font-medium text-gray-400 mb-1">UUID</h4>
+                    <p className="font-mono">{user.user_uuid}</p>
                   </div>
                 </div>
 

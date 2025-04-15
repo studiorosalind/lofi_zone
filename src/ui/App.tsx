@@ -8,12 +8,17 @@ import PomodoroPopup from "./components/popups/pomodoro-popup";
 import ThemePopup from "./components/popups/theme-popup";
 import PlaylistsPopup from "./components/popups/playlists-popup";
 import AmbientPopup from "./components/popups/ambient-popup";
+import UserInfoPopup from "./components/popups/user-info-popup";
+import UserProfilePopup from "./components/popups/user-profile-popup";
 import BackgroundSelector from "./components/background-selector";
 import Dock from "./components/dock";
 import YouTubeAudioPlayer from "./components/youtube-player";
 import { Link } from "react-router-dom";
+import { useUserSession } from "./context/UserSessionContext";
 
 function App() {
+  const { user, isAuthenticated, showLoginModal, setShowLoginModal } = useUserSession();
+  const [showUserProfile, setShowUserProfile] = useState(false);
 
   const backgrounds = {
     "LOFI_GIRL": 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXRxdWN4cmZnaHRucmk0aGQ5bmJzcmw3ZW0zajAyajRuOHduYnozciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XbJYBCi69nyVOffLIU/giphy.gif',
@@ -101,11 +106,12 @@ function App() {
       {/* Top-right widget */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
         <TopRightWidget />
-        <button
-          onClick={toggleFullScreen}
-          className="text-white bg-black/30 hover:bg-black/40 rounded-md p-2 backdrop-blur-md transition-colors"
-        >
-          {isFullScreen ? (
+        <div className="flex gap-2">
+          <button
+            onClick={() => isAuthenticated ? setShowUserProfile(true) : setShowLoginModal(true)}
+            className="text-white bg-black/30 hover:bg-black/40 rounded-md p-2 backdrop-blur-md transition-colors"
+            title={isAuthenticated ? "View Profile" : "Login / Sign Up"}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -117,24 +123,45 @@ function App() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-            </svg>
-          )}
-        </button>
+          </button>
+          <button
+            onClick={toggleFullScreen}
+            className="text-white bg-black/30 hover:bg-black/40 rounded-md p-2 backdrop-blur-md transition-colors"
+          >
+            {isFullScreen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Popups */}
@@ -170,8 +197,22 @@ function App() {
 
       {/* Bottom macOS style dock */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-        <Dock onItemClick={handleDockItemClick} activeItem={activePopup} />
+        <Dock 
+          onItemClick={handleDockItemClick} 
+          activeItem={activePopup} 
+          isActive={isAuthenticated} 
+        />
       </div>
+
+      {/* User Login/Signup Popup */}
+      {showLoginModal && (
+        <UserInfoPopup onClose={() => setShowLoginModal(false)} />
+      )}
+
+      {/* User Profile Popup */}
+      {showUserProfile && (
+        <UserProfilePopup onClose={() => setShowUserProfile(false)} />
+      )}
     </main>
     </>
   )

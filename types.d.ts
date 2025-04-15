@@ -52,8 +52,13 @@ interface Window {
   YT: typeof YT
   onYouTubeIframeAPIReady: () => void
   electronAPI: {
-    getUserSession: () => Promise<{ id: number; username: string; email: string; last_login: string } | null>;
-    setUserSession: (username: string) => Promise<{ id: number; username: string; email: string; last_login: string } | null>;
+    getUserSession: () => Promise<any>;
+    setUserSession: (sessionData: string) => Promise<any>;
+    clearUserSession: () => Promise<boolean>;
+    getPlatformInfo: () => {
+      isElectron: boolean;
+      platform: string;
+      version: string;
+    };
   }
 }
-
